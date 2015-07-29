@@ -2,7 +2,6 @@
 using System.Net.Http;
 
 using NUnit.Framework;
-
 using WeatherConsole;
 
 namespace WeatherConsoleTests
@@ -34,6 +33,29 @@ namespace WeatherConsoleTests
 
             // Act
             Assert.Throws<HttpRequestException>(() => sut.GetForecast("SA", "Timbuktu"));
+        }
+
+        [Test]
+        public void Serializer1_Returns_Expected()
+        {
+            var mock = new MockForecast("", "Adelaide");
+            var reader = new JsonTextReaderReader();
+
+            var result = reader.UnderstandJSON(mock.ToJSON());
+            Assert.AreEqual(mock.Title, result.Title);
+
+            var reader2 = new JavaScriptSerializerSerializer();
+            result = reader.UnderstandJSON(mock.ToJSON());
+        }
+
+        [Test]
+        public void Serializer2_Returns_Expected()
+        {
+            var mock = new MockForecast("", "Adelaide");
+            var reader = new JavaScriptSerializerSerializer();
+
+            var result = reader.UnderstandJSON(mock.ToJSON());
+            Assert.AreEqual(mock.Title, result.Title);
         }
     }
 }

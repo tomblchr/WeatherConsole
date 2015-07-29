@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Newtonsoft.Json;
 
 namespace WeatherConsole
@@ -6,20 +7,29 @@ namespace WeatherConsole
     public class WeatherService
     {
         private readonly IForecastProvider _forecastProvider;
+        private readonly IForecastJsonSerializer _jsonSerializer;
 
-        public WeatherService(IForecastProvider forecastProvider)
+        public WeatherService() 
+            : this(new WebForecastProvider(), new JsonTextReaderReader())
+        {
+
+        }
+
+        public WeatherService(IForecastProvider forecastProvider) 
+            : this(forecastProvider, new JsonTextReaderReader())
+        {
+
+        }
+
+        public WeatherService(IForecastProvider forecastProvider, IForecastJsonSerializer serializer)
         {
             _forecastProvider = forecastProvider;
+            _jsonSerializer = serializer;
         }
 
         public Forecast GetForecast(string state, string locality)
         {
-            var result = _forecastProvider.Load(state, locality);
-            var serializer = JsonSerializer.Create();
-            var forecast = serializer
-                .Deserialize<Forecast>(new JsonTextReader(new StringReader(result)));
-            return forecast;
-
+            return _jsonSerializer.UnderstandJSON(_forecastProvider.Load(state, locality));
         }
     }
 }
