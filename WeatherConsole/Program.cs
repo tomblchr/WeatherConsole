@@ -5,9 +5,10 @@ namespace WeatherConsole
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var service = new WeatherService();
+            var provider = new WebForecastProvider();
+            var service = new WeatherService(provider);
 
             var forecast = service.GetForecast("SA", "Adelaide");
 
